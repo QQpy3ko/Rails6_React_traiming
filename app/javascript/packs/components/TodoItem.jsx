@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import _ from "lodash";
 import axios from "axios";
 import setAxiosHeaders from "./AxiosHeaders";
 
@@ -19,10 +20,13 @@ class TodoItem extends React.Component {
   }
 
   handleChange() {
+    this.setState({
+      complete: this.completedRef.current.checked
+    });
     this.updateTodoItem();
   }
-  updateTodoItem() {
-    this.setState({ complete: this.completedRef.current.checked });
+
+  updateTodoItem = _.debounce(() => {
     setAxiosHeaders();
     axios
     .put(this.path, {
@@ -35,7 +39,7 @@ class TodoItem extends React.Component {
     .catch(error => {
       console.log(error);
     });
-  }
+  }, 1000);
 
   handleDestroy() {
     setAxiosHeaders();
