@@ -10,9 +10,33 @@ class TodoItem extends React.Component {
     this.state = {
       complete: this.props.todoItem.complete
     };
+    this.handleChange = this.handleChange.bind(this);
+    this.updateTodoItem = this.updateTodoItem.bind(this);
+    this.inputRef = React.createRef();
+    this.completedRef = React.createRef();
     this.handleDestroy = this.handleDestroy.bind(this);
     this.path = `/api/v1/todo_items/${this.props.todoItem.id}`;
   }
+
+  handleChange() {
+    this.updateTodoItem();
+  }
+  updateTodoItem() {
+    this.setState({ complete: this.completedRef.current.checked });
+    setAxiosHeaders();
+    axios
+    .put(this.path, {
+      todo_item: {
+        title: this.inputRef.current.value,
+        complete: this.completedRef.current.checked
+      }
+    })
+    .then(response => {})
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
   handleDestroy() {
     setAxiosHeaders();
     const confirmation = confirm("Are you sure?");
@@ -60,6 +84,8 @@ class TodoItem extends React.Component {
             type="text"
             defaultValue={todoItem.title}
             disabled={this.state.complete}
+            onChange={this.handleChange}
+            ref={this.inputRef}
             className="form-control"
             id={`todoItem__title-${todoItem.id}`}
           />
@@ -70,6 +96,8 @@ class TodoItem extends React.Component {
               type="boolean"
               defaultChecked={this.state.complete}
               type="checkbox"
+              onChange={this.handleChange}
+              ref={this.completedRef}
               className="form-check-input"
               id={`complete-${todoItem.id}`}
             />
